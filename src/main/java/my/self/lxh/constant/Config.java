@@ -18,13 +18,13 @@ public class Config {
     @Value("${srgw}")
     public String srgw;
     @Value("${keyword}")
-    public String keyword;
+    public String[] keyword;
     @Value("${targetMail}")
     public String[] targetMail;
 
     public static String JXGW;
     public static String SRGW;
-    public static String KEYWORD;
+    public static String[] KEYWORD;
     public static String[] TARGETMAIL;
     @PostConstruct
     public void init(){

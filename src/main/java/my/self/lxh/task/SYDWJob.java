@@ -4,7 +4,6 @@ import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -50,8 +49,8 @@ public class SYDWJob {
                     simpleMessage.setFrom("343932572@qq.com");
                     simpleMessage.setTo("343932572@qq.com");
                     mailSender.send(simpleMessage);
+                    count = 0;
                 }
-                count = 0;
             }
         }
         return parse;
@@ -60,9 +59,13 @@ public class SYDWJob {
     @Scheduled(cron = "0 0 23 * * ?")
     public void jxgwJob() {
         Document document = getDocument(JXGW);
-        Element list = document.getElementsByClass("newslist").first();
-        Node node = list.childNodes().get(1);
-        List<Element> information = node.toString().lines()
+        List<Element> information = document
+                .getElementsByClass("newslist")
+                .first()
+                .childNodes()
+                .get(1)
+                .toString()
+                .lines()
                 .filter(str -> str.startsWith("<li>"))
                 .map(str -> {
                     Element body = Jsoup.parse(str.split("]]></record>")[ 0 ]).body();
@@ -89,7 +92,10 @@ public class SYDWJob {
     @Scheduled(cron = "0 0 23 * * ?")
     public void srgwJob() {
         Document document = getDocument(SRGW);
-        List<Element> information = document.getElementById("doclist").getElementsByTag("li").stream()
+        List<Element> information = document
+                .getElementById("doclist")
+                .getElementsByTag("li")
+                .stream()
                 .map(element ->
                         Jsoup.parse(
                     element.getElementsByAttributeValue("target","_blank").first()+
